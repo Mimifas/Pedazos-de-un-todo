@@ -20,10 +20,11 @@
       justify-content: center;
       align-items: center;
       font-family: sans-serif;
-      overflow: hidden; /* Evita que aparezcan barras de desplazamiento al hacer zoom */
+      overflow: hidden;
     }
     
     .container {
+      position: relative;
       width: 100vw;
       height: 100vh;
       display: flex;
@@ -32,11 +33,26 @@
       overflow: hidden;
     }
 
+    /* Texto proporcional a la pantalla y a la imagen */
+    .texto-fondo {
+      position: absolute;
+      /* Se calcula según el ancho de la pantalla para mantener la proporción con la imagen */
+      font-size: clamp(1.2rem, 4vw, 3.5rem); 
+      font-weight: 300;
+      letter-spacing: 0.2vw; /* Espaciado de letras también proporcional */
+      color: #888888;
+      text-align: center;
+      user-select: none;
+      z-index: 1;
+      width: 80%; /* Asegura que el texto mantenga un ancho alineado al centro */
+    }
+
     img {
-      /* Hace que la imagen ocupe todo el espacio disponible */
+      position: relative;
+      z-index: 2;
       width: 100vw;
       height: 100vh;
-      object-fit: contain; /* Mantiene la proporción de tu obra sin deformarla */
+      object-fit: contain;
       cursor: zoom-in;
       transition: transform 0.1s ease-out;
       transform-origin: center center;
@@ -50,17 +66,16 @@
 <body>
 
   <div class="container">
+    <div class="texto-fondo">¿Quién soy hoy?</div>
     <img id="Pedazos de un todo" alt="¿Quién soy hoy?">
   </div>
 
   <script>
     const img = document.getElementById('Pedazos de un todo');
     
-    // 1. Carga de imagen anti-caché
     const timestamp = new Date().getTime();
     img.src = 'pedazos-de-un-todo.jpg?v=' + timestamp;
 
-    // 2. Control de Zoom enfocado en el cursor
     let scale = 1;
     const minScale = 1;
     const maxScale = 5;
