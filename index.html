@@ -14,26 +14,85 @@
       align-items: center;
       min-height: 100vh;
       font-family: sans-serif;
+      overflow: hidden; /* Evita barras de desplazamiento no deseadas durante el zoom */
     }
+    
+    .container {
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
     img {
       max-width: 90vw;
       max-height: 85vh;
       object-fit: contain;
       border-radius: 8px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      cursor: zoom-in;
+      transition: transform 0.15s ease-out; /* Transición suave */
+      transform-origin: center center;
+    }
+
+    img.zoomed {
+      cursor: zoom-out;
     }
   </style>
 </head>
 <body>
 
-  <!-- La imagen se carga dinámicamente para evitar el almacenamiento en caché del navegador -->
-  <img id="Pedazos de un todo" alt="¿Quién soy hoy?">
+  <div class="container">
+    <!-- La imagen se carga dinámicamente para evitar el almacenamiento en caché del navegador -->
+    <img id="Pedazos de un todo" alt="¿Quién soy hoy?">
+  </div>
 
   <script>
     const img = document.getElementById('Pedazos de un todo');
-    // Forzamos al navegador a solicitar el archivo actualizado añadiendo la fecha/hora actual
+    
+    // 1. Carga de imagen anti-caché
     const timestamp = new Date().getTime();
-    img.src = 'pedazos-de-un-todo.jpg?v=' + timestamp;
+    img.src = 'pedazos-de-un-todo.JPG?v=' + timestamp;
+
+    // 2. Control de Zoom
+    let scale = 1;
+    const minScale = 1;
+    const maxScale = 5;
+
+    // Actualiza la transformación visual de la imagen
+    function updateTransform() {
+      img.style.transform = `scale(${scale})`;
+      if (scale > 1) {
+        img.classList.add('zoomed');
+      } else {
+        img.classList.remove('zoomed');
+      }
+    }
+
+    // Toggle de Zoom al hacer Clic
+    img.addEventListener('click', () => {
+      if (scale === 1) {
+        scale = 2.5; // Nivel de zoom al hacer clic para ver detalles
+      } else {
+        scale = 1;   // Volver al tamaño original
+      }
+      updateTransform();
+    });
+
+    // Zoom interactivo con la Rueda del Mouse (Wheel)
+    window.addEventListener('wheel', (e) => {
+      e.preventDefault(); // Evita el scroll normal de la página
+      
+      if (e.deltaY < 0) {
+        // Rueda hacia arriba -> Acercar
+        scale = Math.min(scale + 0.2, maxScale);
+      } else {
+        // Rueda hacia abajo -> Alejar
+        scale = Math.max(scale - 0.2, minScale);
+      }
+      
+      updateTransform();
+    }, { passive: false });
   </script>
 
 </body>
