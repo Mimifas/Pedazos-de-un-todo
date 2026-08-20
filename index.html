@@ -5,31 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pedazos de un todo</title>
   <style>
-    body {
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
       margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
       background-color: #0e0e0e;
       color: #ffffff;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
       font-family: sans-serif;
-      overflow: hidden;
+      overflow: hidden; /* Evita que aparezcan barras de desplazamiento al hacer zoom */
     }
     
     .container {
-      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      overflow: hidden;
     }
 
     img {
-      max-width: 90vw;
-      max-height: 85vh;
-      object-fit: contain;
-      border-radius: 8px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      /* Hace que la imagen ocupe todo el espacio disponible */
+      width: 100vw;
+      height: 100vh;
+      object-fit: contain; /* Mantiene la proporción de tu obra sin deformarla */
       cursor: zoom-in;
       transition: transform 0.1s ease-out;
       transform-origin: center center;
@@ -58,7 +65,6 @@
     const minScale = 1;
     const maxScale = 5;
 
-    // Función para actualizar el punto focal (transform-origin) según el cursor
     function setOrigin(e) {
       const rect = img.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -72,12 +78,10 @@
         img.classList.add('zoomed');
       } else {
         img.classList.remove('zoomed');
-        // Si regresa al tamaño normal, reorientamos al centro
         img.style.transformOrigin = 'center center';
       }
     }
 
-    // Zoom al hacer Clic en el punto exacto
     img.addEventListener('click', (e) => {
       if (scale === 1) {
         setOrigin(e);
@@ -88,11 +92,9 @@
       updateTransform();
     });
 
-    // Zoom con Rueda del Mouse hacia la posición del cursor
     window.addEventListener('wheel', (e) => {
       e.preventDefault();
       
-      // Si el cursor está sobre la imagen, enfocamos el zoom ahí
       if (e.target === img) {
         setOrigin(e);
       }
