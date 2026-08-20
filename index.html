@@ -14,7 +14,7 @@
       align-items: center;
       min-height: 100vh;
       font-family: sans-serif;
-      overflow: hidden; /* Evita barras de desplazamiento no deseadas durante el zoom */
+      overflow: hidden;
     }
     
     .container {
@@ -31,7 +31,7 @@
       border-radius: 8px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
       cursor: zoom-in;
-      transition: transform 0.15s ease-out; /* Transición suave */
+      transition: transform 0.1s ease-out;
       transform-origin: center center;
     }
 
@@ -43,7 +43,6 @@
 <body>
 
   <div class="container">
-    <!-- La imagen se carga dinámicamente para evitar el almacenamiento en caché del navegador -->
     <img id="Pedazos de un todo" alt="¿Quién soy hoy?">
   </div>
 
@@ -54,41 +53,54 @@
     const timestamp = new Date().getTime();
     img.src = 'pedazos-de-un-todo.jpg?v=' + timestamp;
 
-    // 2. Control de Zoom
+    // 2. Control de Zoom enfocado en el cursor
     let scale = 1;
     const minScale = 1;
     const maxScale = 5;
 
-    // Actualiza la transformación visual de la imagen
+    // Función para actualizar el punto focal (transform-origin) según el cursor
+    function setOrigin(e) {
+      const rect = img.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      img.style.transformOrigin = `${x}% ${y}%`;
+    }
+
     function updateTransform() {
       img.style.transform = `scale(${scale})`;
       if (scale > 1) {
         img.classList.add('zoomed');
       } else {
         img.classList.remove('zoomed');
+        // Si regresa al tamaño normal, reorientamos al centro
+        img.style.transformOrigin = 'center center';
       }
     }
 
-    // Toggle de Zoom al hacer Clic
-    img.addEventListener('click', () => {
+    // Zoom al hacer Clic en el punto exacto
+    img.addEventListener('click', (e) => {
       if (scale === 1) {
-        scale = 2.5; // Nivel de zoom al hacer clic para ver detalles
+        setOrigin(e);
+        scale = 2.5;
       } else {
-        scale = 1;   // Volver al tamaño original
+        scale = 1;
       }
       updateTransform();
     });
 
-    // Zoom interactivo con la Rueda del Mouse (Wheel)
+    // Zoom con Rueda del Mouse hacia la posición del cursor
     window.addEventListener('wheel', (e) => {
-      e.preventDefault(); // Evita el scroll normal de la página
+      e.preventDefault();
       
+      // Si el cursor está sobre la imagen, enfocamos el zoom ahí
+      if (e.target === img) {
+        setOrigin(e);
+      }
+
       if (e.deltaY < 0) {
-        // Rueda hacia arriba -> Acercar
-        scale = Math.min(scale + 0.2, maxScale);
+        scale = Math.min(scale + 0.25, maxScale);
       } else {
-        // Rueda hacia abajo -> Alejar
-        scale = Math.max(scale - 0.2, minScale);
+        scale = Math.max(scale - 0.25, minScale);
       }
       
       updateTransform();
